@@ -20,14 +20,22 @@ export class Neo4JService {
     return this.driver.session();
   }
 
-  read(cypher: string): Result {
+  async read(cypher: string): Promise<Result> {
     const session = this.getReadSession();
-    return session.run(cypher);
+    try {
+      return session.run(cypher);
+    } catch (error) {
+      throw new Error(`Failed to read data from Neo4J: ${error.message}`);
+    }
   }
 
-  write(cypher: string): Result {
+  async write(cypher: string): Promise<Result> {
     const session = this.getWriteSession();
-    return session.run(cypher);
+    try {
+      return session.run(cypher);
+    } catch (error) {
+      throw new Error(`Failed to write data to Neo4J: ${error.message}`);
+    }
   }
 
   close() {

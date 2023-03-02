@@ -1,16 +1,16 @@
 import { Injectable } from '@nestjs/common';
-import { User } from './models/user-model';
-import { UserRepository } from './repositories/users.repository';
+import { CreateUserInput } from './models/create-user-input';
+import { UsersRepository } from './repositories/users.repository';
 
 @Injectable()
 export class UsersService {
-  constructor(private readonly repository: UserRepository) {}
+  constructor(private readonly repository: UsersRepository) {}
 
   async findByUsername(username: string) {
     return this.repository.findByUsername(username);
   }
 
-  async create(user: User) {
+  async create(user: CreateUserInput) {
     return this.repository.create(user);
   }
 }

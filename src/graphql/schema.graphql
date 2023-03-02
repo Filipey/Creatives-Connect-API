@@ -27,3 +27,17 @@ type User {
 type Query {
   findUserByUsername(username: String!): User!
 }
+
+type Mutation {
+  createUser(userInput: CreateUserInput!): User!
+}
+
+input CreateUserInput {
+  username: String!
+  password: String!
+  name: String!
+  biography: String
+  picture: String
+  city: String!
+  birthday: Int!
+}

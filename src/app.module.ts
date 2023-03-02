@@ -5,7 +5,6 @@ import { GraphQLModule } from '@nestjs/graphql';
 import { join } from 'path';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { GqlModulue } from './graphql/gql.module';
 import { UsersModule } from './users/users.module';
 
 @Module({
@@ -14,8 +13,8 @@ import { UsersModule } from './users/users.module';
     GraphQLModule.forRoot({
       driver: ApolloDriver,
       autoSchemaFile: join(process.cwd(), 'src/graphql/schema.graphql'),
+      context: ({ req }) => ({ req }),
     }),
-    GqlModulue,
     UsersModule,
   ],
   controllers: [AppController],
