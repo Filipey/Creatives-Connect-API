@@ -1,0 +1,29 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type Post {
+  text: String!
+  picture: String
+  createdAt: Int!
+  likes: Int!
+  owner: User!
+}
+
+type User {
+  name: String!
+  password: String!
+  username: String!
+  biography: String
+  picture: String
+  city: String!
+  birthday: Int!
+  createdAt: Int!
+  likes: [Post!]
+  following: [User!]
+  followers: [User!]
+}
+
+type Query {
+  findUserByUsername(username: String!): User!
+}
