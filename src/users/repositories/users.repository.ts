@@ -10,36 +10,38 @@ export class UsersRepository {
   constructor(private readonly service: Neo4JService) {}
 
   async findByUsername(username: string) {
-    const user = await this.service.read(
+    const result = await this.service.read(
       `MATCH (u:User) WHERE u.username = '${username}' RETURN u`,
     );
 
-    if (!user) {
+    if (result.length === 0) {
       throw new UserNotFound(username);
     }
 
-    return user;
+    return result[0].get(0).properties;
   }
 
   async create(user: CreateUserInput) {
-    const existUser = await this.findByUsername(user.username);
+    const queryUser = await this.service.read(
+      `MATCH (u:User) WHERE u.username = '${user.username}' RETURN u`,
+    );
 
-    if (!existUser) {
+    if (queryUser.length !== 0) {
       throw new UserAlreadyExists(user.username);
     }
 
     const hashedPassword = await hashPassword(user.password);
 
-    const savedUser = await this.service.write(
+    const result = await this.service.write(
       `CREATE (u:User {username: '${user.username}', name: '${
         user.name
       }', password: '${hashedPassword}', biography: '${
         user.biography
       }', picture: '${user.picture}', city: '${user.city}', birthday: ${
         user.birthday
-      }, created_at: ${Date.now()}})`,
+      }, created_at: ${Date.now()}}) RETURN u`,
     );
 
-    return savedUser;
+    return result[0].get(0).properties;
   }
 }

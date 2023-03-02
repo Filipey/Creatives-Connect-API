@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { auth, Driver, driver as neo4jDriver, Result } from 'neo4j-driver';
+import { auth, Driver, driver as neo4jDriver } from 'neo4j-driver';
 
 @Injectable()
 export class Neo4JService {
@@ -20,19 +20,21 @@ export class Neo4JService {
     return this.driver.session();
   }
 
-  async read(cypher: string): Promise<Result> {
+  async read(cypher: string) {
     const session = this.getReadSession();
     try {
-      return session.run(cypher);
+      const query = await session.run(cypher);
+      return query.records;
     } catch (error) {
       throw new Error(`Failed to read data from Neo4J: ${error.message}`);
     }
   }
 
-  async write(cypher: string): Promise<Result> {
+  async write(cypher: string) {
     const session = this.getWriteSession();
     try {
-      return session.run(cypher);
+      const query = await session.run(cypher);
+      return query.records;
     } catch (error) {
       throw new Error(`Failed to write data to Neo4J: ${error.message}`);
     }
