@@ -13,4 +13,8 @@ export class UsersService {
   async create(user: CreateUserInput) {
     return this.repository.create(user);
   }
+
+  async followUser(sourceUsername: string, sinkUsername: string) {
+    return this.repository.followUser(sourceUsername, sinkUsername);
+  }
 }

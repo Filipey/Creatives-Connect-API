@@ -21,6 +21,20 @@ export class UsersRepository {
     return result[0].get(0).properties;
   }
 
+  async followUser(sourceUsername: string, sinkUsername: string) {
+    // const isAlreadyFollowing =
+
+    const result = await this.service.write(
+      `MATCH (source:User), (sink:User)
+       WHERE source.username = '${sourceUsername}' AND sink.username = '${sinkUsername}'
+       CREATE (source)-[f:FOLLOW]->(sink)
+       RETURN type(f)
+      `,
+    );
+
+    return result[0].get(0).properties;
+  }
+
   async create(user: CreateUserInput) {
     const queryUser = await this.service.read(
       `MATCH (u:User) WHERE u.username = '${user.username}' RETURN u`,

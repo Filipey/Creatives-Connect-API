@@ -30,6 +30,7 @@ type Query {
 
 type Mutation {
   createUser(userInput: CreateUserInput!): User!
+  followUser(sourceUsername: String!, sinkUsername: String!): String!
 }
 
 input CreateUserInput {

@@ -18,4 +18,12 @@ export class UsersResolver {
   async createUser(@Args('userInput') userInput: CreateUserInput) {
     return this.userService.create(userInput);
   }
+
+  @Mutation(() => String)
+  async followUser(
+    @Args('sourceUsername') sourceUsername: string,
+    @Args('sinkUsername') sinkUsername: string,
+  ) {
+    return this.userService.followUser(sourceUsername, sinkUsername);
+  }
 }
