@@ -1,4 +1,5 @@
-import { Field, Int, ObjectType } from '@nestjs/graphql';
+import { Field, ObjectType } from '@nestjs/graphql';
+import { GraphQLBigInt } from 'graphql-scalars';
 import { Post } from 'src/posts/models/post-model';
 
 @ObjectType()
@@ -21,10 +22,10 @@ export class User {
   @Field()
   city: string;
 
-  @Field(() => Int)
+  @Field(() => GraphQLBigInt)
   birthday: number;
 
-  @Field(() => Int)
+  @Field(() => GraphQLBigInt)
   createdAt: number;
 
   @Field(() => [Post], { nullable: true })

@@ -1,4 +1,5 @@
-import { Field, InputType, Int } from '@nestjs/graphql';
+import { Field, InputType } from '@nestjs/graphql';
+import { GraphQLBigInt } from 'graphql-scalars';
 import { User } from './user-model';
 
 @InputType()
@@ -21,6 +22,6 @@ export class CreateUserInput implements Partial<User> {
   @Field()
   city: string;
 
-  @Field(() => Int)
+  @Field(() => GraphQLBigInt)
   birthday: number;
 }

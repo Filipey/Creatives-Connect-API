@@ -17,12 +17,17 @@ type User {
   biography: String
   picture: String
   city: String!
-  birthday: Int!
-  createdAt: Int!
+  birthday: BigInt!
+  createdAt: BigInt!
   likes: [Post!]
   following: [User!]
   followers: [User!]
 }
+
+"""
+The `BigInt` scalar type represents non-fractional signed whole numeric values.
+"""
+scalar BigInt
 
 type Query {
   findUserByUsername(username: String!): User!
@@ -41,5 +46,5 @@ input CreateUserInput {
   biography: String
   picture: String
   city: String!
-  birthday: Int!
+  birthday: BigInt!
 }
