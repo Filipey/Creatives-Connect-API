@@ -19,11 +19,19 @@ export class UsersResolver {
     return this.userService.create(userInput);
   }
 
-  @Mutation(() => String)
+  @Mutation(() => Boolean)
   async followUser(
     @Args('sourceUsername') sourceUsername: string,
     @Args('sinkUsername') sinkUsername: string,
   ) {
     return this.userService.followUser(sourceUsername, sinkUsername);
+  }
+
+  @Mutation(() => Boolean)
+  async unfollowUser(
+    @Args('sourceUsername') sourceUsername: string,
+    @Args('sinkUsername') sinkUsername: string,
+  ) {
+    return this.userService.unfollowUser(sourceUsername, sinkUsername);
   }
 }

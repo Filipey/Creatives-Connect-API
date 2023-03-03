@@ -17,4 +17,8 @@ export class UsersService {
   async followUser(sourceUsername: string, sinkUsername: string) {
     return this.repository.followUser(sourceUsername, sinkUsername);
   }
+
+  async unfollowUser(sourceUsername: string, sinkUsername: string) {
+    return this.repository.unfollowUser(sourceUsername, sinkUsername);
+  }
 }

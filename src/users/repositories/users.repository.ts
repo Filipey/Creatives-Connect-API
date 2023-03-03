@@ -1,5 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { UserAlreadyExists } from 'src/common/errors/UserAlreadyExists';
+import { UserAlreadyFollow } from 'src/common/errors/UserAlreadyFollow';
+import { UserDontFollow } from 'src/common/errors/UserDontFollow';
 import { UserNotFound } from 'src/common/errors/UserNotFound';
 import { Neo4JService } from 'src/database/database.service';
 import { hashPassword } from 'src/utils/Bcrypt';
@@ -8,6 +10,17 @@ import { CreateUserInput } from '../models/create-user-input';
 @Injectable()
 export class UsersRepository {
   constructor(private readonly service: Neo4JService) {}
+
+  private async isFollowing(sourceUsername: string, sinkUsername: string) {
+    const isAlreadyFollowing = await this.service.read(`
+    MATCH (u:User {username: '${sourceUsername}'})-[f:FOLLOW]->(u2:User {username: '${sinkUsername}'}) 
+    RETURN f
+  `);
+
+    if (isAlreadyFollowing.length === 0) return false;
+
+    if (isAlreadyFollowing.length > 0) return true;
+  }
 
   async findByUsername(username: string) {
     const result = await this.service.read(
@@ -22,7 +35,14 @@ export class UsersRepository {
   }
 
   async followUser(sourceUsername: string, sinkUsername: string) {
-    // const isAlreadyFollowing =
+    const isAlreadyFollowing = await this.isFollowing(
+      sourceUsername,
+      sinkUsername,
+    );
+
+    if (isAlreadyFollowing) {
+      throw new UserAlreadyFollow(sourceUsername, sinkUsername);
+    }
 
     const result = await this.service.write(
       `MATCH (source:User), (sink:User)
@@ -32,7 +52,28 @@ export class UsersRepository {
       `,
     );
 
-    return result[0].get(0).properties;
+    if (result.length === 1) return true;
+
+    return false;
+  }
+
+  async unfollowUser(sourceUsername: string, sinkUsername: string) {
+    const isFollowing = await this.isFollowing(sourceUsername, sinkUsername);
+
+    if (!isFollowing) {
+      throw new UserDontFollow(sourceUsername, sinkUsername);
+    }
+
+    const result = await this.service.write(
+      `MATCH (source:User)-[f:FOLLOW]->(sink:User)
+       WHERE source.username = '${sourceUsername}' AND sink.username = '${sinkUsername}'
+       DELETE f
+      `,
+    );
+
+    if (result.length === 0) return true;
+
+    return false;
   }
 
   async create(user: CreateUserInput) {
