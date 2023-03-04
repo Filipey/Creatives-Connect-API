@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { UserNotFound } from 'src/common/errors/UserNotFound';
+import { parseDbInt } from 'src/utils/DbParser';
 import { CreateUserInput } from './models/create-user-input';
 import { UsersRepository } from './repositories/users.repository';
 
@@ -49,11 +50,45 @@ export class UsersService {
     return false;
   }
 
+  async findUserFollowers(username: string) {
+    const result = await this.repository.findUserFollowers(username);
+
+    const nodes = result.map((node) => node.get('u'));
+
+    const followers = nodes.map((user) => ({
+      ...user,
+      createdAt: parseDbInt(user.createdAt),
+      birthday: parseDbInt(user.birthday),
+    }));
+
+    return followers;
+  }
+
+  async findFollowedsByUser(username: string) {
+    const result = await this.repository.findFollowedsByUser(username);
+
+    const nodes = result.map((node) => node.get('u'));
+
+    const followers = nodes.map((user) => ({
+      ...user,
+      createdAt: parseDbInt(user.createdAt),
+      birthday: parseDbInt(user.birthday),
+    }));
+
+    return followers;
+  }
+
   async create(user: CreateUserInput) {
     return this.repository.create(user);
   }
 
   async delete(username: string) {
     return this.repository.delete(username);
+  }
+
+  async update(username: string, user: CreateUserInput) {
+    const result = await this.repository.update(username, user);
+
+    return result[0].get(0).properties;
   }
 }

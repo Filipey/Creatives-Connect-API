@@ -78,6 +78,24 @@ export class UsersRepository {
     return result;
   }
 
+  async findUserFollowers(username: string) {
+    const result = await this.service.read(`
+    MATCH (u:User)-[:FOLLOW]->(u2:User {username: '${username}'})
+    RETURN u
+    `);
+
+    return result;
+  }
+
+  async findFollowedsByUser(username: string) {
+    const result = await this.service.read(`
+    MATCH (u:User {username: '${username}'})-[:FOLLOW]->(u2:User)
+    RETURN u2
+    `);
+
+    return result;
+  }
+
   async create(user: CreateUserInput) {
     const queryUser = await this.service.read(
       `MATCH (u:User) WHERE u.username = '${user.username}' RETURN u`,
@@ -117,5 +135,26 @@ export class UsersRepository {
     `);
 
     return true;
+  }
+
+  async update(username: string, updateUser: CreateUserInput) {
+    const queryUser = await this.service.read(`
+    MATCH (u:User {username: '${username}'})
+    RETURN u
+    `);
+
+    if (queryUser.length === 0) {
+      throw new UserNotFound(username);
+    }
+
+    const updatedUser = await this.service.write(`
+    MATCH(u:User {username: '${username}'})
+    SET u.name = '${updateUser.name}', u.biography = '${updateUser.biography}',
+    u.picture = '${updateUser.picture}', u.city = '${updateUser.city}',
+    u.birthday = ${updateUser.birthday}
+    RETURN u
+    `);
+
+    return updatedUser;
   }
 }

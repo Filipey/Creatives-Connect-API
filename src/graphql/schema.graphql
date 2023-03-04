@@ -13,14 +13,6 @@ The `BigInt` scalar type represents non-fractional signed whole numeric values.
 """
 scalar BigInt
 
-type Post {
-  id: ID!
-  text: String!
-  picture: String
-  createdAt: BigInt!
-  likes: Float!
-}
-
 type User {
   name: String!
   password: String!
@@ -30,10 +22,6 @@ type User {
   city: String!
   birthday: BigInt!
   createdAt: BigInt!
-  likes: [Post!]
-  following: [User!]
-  followers: [User!]
-  posts: [Post!]
 }
 
 type PostComment {
@@ -43,9 +31,19 @@ type PostComment {
   owner: User!
 }
 
+type Post {
+  id: ID!
+  text: String!
+  picture: String
+  createdAt: BigInt!
+  likes: Float!
+}
+
 type Query {
   findUserByUsername(username: String!): User!
   findAll: [User!]!
+  findUserFollowers(username: String!): [User!]!
+  findFollowedsByUser(username: String!): [User!]!
   findPostById(id: String!): Post!
   findUserPosts(username: String!): [Post!]!
   findPostComments(postId: String!): [PostComment!]!
@@ -56,6 +54,7 @@ type Mutation {
   followUser(sourceUsername: String!, sinkUsername: String!): Boolean!
   unfollowUser(sourceUsername: String!, sinkUsername: String!): Boolean!
   deleteUser(username: String!): Boolean!
+  updateUser(username: String!, updatedUser: CreateUserInput!): User!
   likePost(username: String!, postId: String!): Boolean!
   unlikePost(username: String!, postId: String!): Boolean!
   comment(username: String!, postId: String!, commentInput: CommentInput!): Comment!

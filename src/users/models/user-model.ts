@@ -1,6 +1,5 @@
 import { Field, ObjectType } from '@nestjs/graphql';
 import { GraphQLBigInt } from 'graphql-scalars';
-import { Post } from 'src/posts/models/post-model';
 
 @ObjectType()
 export class User {
@@ -27,16 +26,4 @@ export class User {
 
   @Field(() => GraphQLBigInt)
   createdAt: number;
-
-  @Field(() => [Post], { nullable: true })
-  likes: Post[];
-
-  @Field(() => [User], { nullable: true })
-  following: User[];
-
-  @Field(() => [User], { nullable: true })
-  followers: User[];
-
-  @Field(() => [Post], { nullable: true })
-  posts: Post[];
 }
