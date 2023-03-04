@@ -2,10 +2,16 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
-type Comment {
-  id: ID!
-  text: String!
-  created_at: BigInt!
+type User {
+  name: String!
+  password: String!
+  username: String!
+  email: String!
+  biography: String
+  picture: String
+  city: String!
+  birthday: BigInt!
+  createdAt: BigInt!
 }
 
 """
@@ -13,15 +19,17 @@ The `BigInt` scalar type represents non-fractional signed whole numeric values.
 """
 scalar BigInt
 
-type User {
-  name: String!
-  password: String!
+type JwtPayloadResponse {
   username: String!
-  biography: String
-  picture: String
-  city: String!
-  birthday: BigInt!
-  createdAt: BigInt!
+  iat: BigInt!
+  exp: BigInt!
+  token: String
+}
+
+type Comment {
+  id: ID!
+  text: String!
+  created_at: BigInt!
 }
 
 type PostComment {
@@ -62,6 +70,7 @@ type Mutation {
   createPost(username: String!, postInput: CreatePostInput!): Post!
   updatePost(postId: String!, updatePost: CreatePostInput!): Post!
   deletePost(postId: String!): Boolean!
+  login(username: String!, password: String!): JwtPayloadResponse!
 }
 
 input CreateUserInput {

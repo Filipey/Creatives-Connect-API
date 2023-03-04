@@ -7,5 +7,6 @@ import { UsersService } from './users.service';
 @Module({
   imports: [Neo4JModule],
   providers: [UsersService, UsersResolver, UsersRepository],
+  exports: [UsersService],
 })
 export class UsersModule {}
