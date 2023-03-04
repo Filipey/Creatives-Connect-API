@@ -1,15 +1,14 @@
-import { Field, ObjectType } from '@nestjs/graphql';
+import { Field, ID, ObjectType } from '@nestjs/graphql';
 import { GraphQLBigInt } from 'graphql-scalars';
-import { User } from 'src/users/models/user-model';
 
 @ObjectType()
 export class Comment {
+  @Field(() => ID)
+  id: string;
+
   @Field()
   text: string;
 
   @Field(() => GraphQLBigInt)
-  createdAt: number;
-
-  @Field(() => User)
-  owner: User;
+  created_at: number;
 }

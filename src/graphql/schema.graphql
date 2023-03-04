@@ -3,9 +3,9 @@
 # ------------------------------------------------------
 
 type Comment {
+  id: ID!
   text: String!
-  createdAt: BigInt!
-  owner: User!
+  created_at: BigInt!
 }
 
 """
@@ -14,12 +14,11 @@ The `BigInt` scalar type represents non-fractional signed whole numeric values.
 scalar BigInt
 
 type Post {
+  id: ID!
   text: String!
   picture: String
-  createdAt: Int!
-  likes: Int!
-  owner: User!
-  comments: [Comment!]!
+  createdAt: BigInt!
+  likes: Float!
 }
 
 type User {
@@ -37,9 +36,19 @@ type User {
   posts: [Post!]
 }
 
+type PostComment {
+  id: String!
+  text: String!
+  createdAt: BigInt!
+  owner: User!
+}
+
 type Query {
   findUserByUsername(username: String!): User!
   findAll: [User!]!
+  findPostById(id: String!): Post!
+  findUserPosts(username: String!): [Post!]!
+  findPostComments(postId: String!): [PostComment!]!
 }
 
 type Mutation {
@@ -47,6 +56,13 @@ type Mutation {
   followUser(sourceUsername: String!, sinkUsername: String!): Boolean!
   unfollowUser(sourceUsername: String!, sinkUsername: String!): Boolean!
   deleteUser(username: String!): Boolean!
+  likePost(username: String!, postId: String!): Boolean!
+  unlikePost(username: String!, postId: String!): Boolean!
+  comment(username: String!, postId: String!, commentInput: CommentInput!): Comment!
+  deleteComment(username: String!, postId: String!, commentId: String!): Boolean!
+  createPost(username: String!, postInput: CreatePostInput!): Post!
+  updatePost(postId: String!, updatePost: CreatePostInput!): Post!
+  deletePost(postId: String!): Boolean!
 }
 
 input CreateUserInput {
@@ -57,4 +73,13 @@ input CreateUserInput {
   picture: String
   city: String!
   birthday: BigInt!
+}
+
+input CommentInput {
+  text: String!
+}
+
+input CreatePostInput {
+  text: String!
+  picture: String
 }

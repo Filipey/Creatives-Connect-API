@@ -1,24 +1,20 @@
-import { Field, Int, ObjectType } from '@nestjs/graphql';
-import { User } from 'src/users/models/user-model';
-import { Comment } from './comment-model';
+import { Field, Float, ID, ObjectType } from '@nestjs/graphql';
+import { GraphQLBigInt } from 'graphql-scalars';
 
 @ObjectType()
 export class Post {
+  @Field(() => ID)
+  id: string;
+
   @Field()
   text: string;
 
   @Field({ nullable: true })
   picture?: string;
 
-  @Field(() => Int)
+  @Field(() => GraphQLBigInt)
   createdAt: number;
 
-  @Field(() => Int)
+  @Field(() => Float)
   likes: number;
-
-  @Field(() => User)
-  owner: User;
-
-  @Field(() => [Comment])
-  comments: Comment[];
 }
