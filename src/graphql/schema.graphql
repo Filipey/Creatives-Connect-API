@@ -2,12 +2,24 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
+type Comment {
+  text: String!
+  createdAt: BigInt!
+  owner: User!
+}
+
+"""
+The `BigInt` scalar type represents non-fractional signed whole numeric values.
+"""
+scalar BigInt
+
 type Post {
   text: String!
   picture: String
   createdAt: Int!
   likes: Int!
   owner: User!
+  comments: [Comment!]!
 }
 
 type User {
@@ -22,21 +34,19 @@ type User {
   likes: [Post!]
   following: [User!]
   followers: [User!]
+  posts: [Post!]
 }
-
-"""
-The `BigInt` scalar type represents non-fractional signed whole numeric values.
-"""
-scalar BigInt
 
 type Query {
   findUserByUsername(username: String!): User!
+  findAll: [User!]!
 }
 
 type Mutation {
   createUser(userInput: CreateUserInput!): User!
   followUser(sourceUsername: String!, sinkUsername: String!): Boolean!
   unfollowUser(sourceUsername: String!, sinkUsername: String!): Boolean!
+  deleteUser(username: String!): Boolean!
 }
 
 input CreateUserInput {

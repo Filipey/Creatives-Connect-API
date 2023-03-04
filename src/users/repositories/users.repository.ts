@@ -20,6 +20,8 @@ export class UsersRepository {
     if (isAlreadyFollowing.length === 0) return false;
 
     if (isAlreadyFollowing.length > 0) return true;
+
+    return false;
   }
 
   async findByUsername(username: string) {
@@ -27,11 +29,15 @@ export class UsersRepository {
       `MATCH (u:User) WHERE u.username = '${username}' RETURN u`,
     );
 
-    if (result.length === 0) {
-      throw new UserNotFound(username);
-    }
+    return result;
+  }
 
-    return result[0].get(0).properties;
+  async findAll() {
+    const result = await this.service.read(`
+    MATCH (u:User) RETURN u
+    `);
+
+    return result;
   }
 
   async followUser(sourceUsername: string, sinkUsername: string) {
@@ -52,9 +58,7 @@ export class UsersRepository {
       `,
     );
 
-    if (result.length === 1) return true;
-
-    return false;
+    return result;
   }
 
   async unfollowUser(sourceUsername: string, sinkUsername: string) {
@@ -71,9 +75,7 @@ export class UsersRepository {
       `,
     );
 
-    if (result.length === 0) return true;
-
-    return false;
+    return result;
   }
 
   async create(user: CreateUserInput) {
@@ -98,5 +100,22 @@ export class UsersRepository {
     );
 
     return result[0].get(0).properties;
+  }
+
+  async delete(username: string) {
+    const userExists = await this.service.read(`
+    MATCH (u: User {username: '${username}'}) RETURN u
+    `);
+
+    if (userExists.length === 0) {
+      throw new UserNotFound(username);
+    }
+
+    await this.service.write(`
+    MATCH (u:User {username: '${username}'})
+    DELETE u
+    `);
+
+    return true;
   }
 }

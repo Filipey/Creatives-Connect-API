@@ -36,4 +36,7 @@ export class User {
 
   @Field(() => [User], { nullable: true })
   followers: User[];
+
+  @Field(() => [Post], { nullable: true })
+  posts: Post[];
 }

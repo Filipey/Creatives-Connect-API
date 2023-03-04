@@ -1,4 +1,5 @@
-import { Field, Int, ObjectType } from '@nestjs/graphql';
+import { Field, ObjectType } from '@nestjs/graphql';
+import { GraphQLBigInt } from 'graphql-scalars';
 import { User } from 'src/users/models/user-model';
 
 @ObjectType()
@@ -6,7 +7,7 @@ export class Comment {
   @Field()
   text: string;
 
-  @Field(() => Int)
+  @Field(() => GraphQLBigInt)
   createdAt: number;
 
   @Field(() => User)

@@ -1,5 +1,6 @@
 import { Field, Int, ObjectType } from '@nestjs/graphql';
 import { User } from 'src/users/models/user-model';
+import { Comment } from './comment-model';
 
 @ObjectType()
 export class Post {
@@ -17,4 +18,7 @@ export class Post {
 
   @Field(() => User)
   owner: User;
+
+  @Field(() => [Comment])
+  comments: Comment[];
 }

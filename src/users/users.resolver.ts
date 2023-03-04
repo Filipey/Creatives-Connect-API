@@ -14,6 +14,11 @@ export class UsersResolver {
     return this.userService.findByUsername(username);
   }
 
+  @Query(() => [User])
+  async findAll() {
+    return this.userService.findAllUsers();
+  }
+
   @Mutation(() => User)
   async createUser(@Args('userInput') userInput: CreateUserInput) {
     return this.userService.create(userInput);
@@ -33,5 +38,10 @@ export class UsersResolver {
     @Args('sinkUsername') sinkUsername: string,
   ) {
     return this.userService.unfollowUser(sourceUsername, sinkUsername);
+  }
+
+  @Mutation(() => Boolean)
+  async deleteUser(@Args('username') username: string) {
+    return this.userService.delete(username);
   }
 }
