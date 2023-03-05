@@ -1,4 +1,4 @@
-import { Field, ObjectType } from '@nestjs/graphql';
+import { Field, HideField, ObjectType } from '@nestjs/graphql';
 import { GraphQLBigInt } from 'graphql-scalars';
 
 @ObjectType()
@@ -6,6 +6,7 @@ export class User {
   @Field()
   name: string;
 
+  @HideField()
   @Field()
   password: string;
 

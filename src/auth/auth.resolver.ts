@@ -3,7 +3,7 @@ import { Args, Mutation, Resolver } from '@nestjs/graphql';
 import { AuthService } from './auth.service';
 import { JwtPayloadResponse } from './jwt/jwt.payload';
 
-@Resolver()
+@Resolver(() => JwtPayloadResponse)
 export class AuthResolver {
   constructor(private readonly authService: AuthService) {}
 

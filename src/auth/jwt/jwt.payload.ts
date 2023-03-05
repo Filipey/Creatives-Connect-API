@@ -1,4 +1,4 @@
-import { Field, ObjectType } from '@nestjs/graphql';
+import { Field, HideField, ObjectType } from '@nestjs/graphql';
 import { GraphQLBigInt } from 'graphql-scalars';
 
 export interface JwtPayload {
@@ -14,6 +14,7 @@ export class JwtPayloadResponse {
   @Field()
   username: string;
 
+  @HideField()
   @Field()
   password: string;
 
