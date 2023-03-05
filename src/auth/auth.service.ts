@@ -23,9 +23,10 @@ export class AuthService {
     return null;
   }
 
-  async createToken(username: string) {
+  async createToken(username: string, password: string) {
     const payload: JwtPayloadResponse = {
       username: username,
+      password: password,
       iat: Date.now(),
       exp: Date.now() + 3600 * 1000, // +1 hour
     };

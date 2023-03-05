@@ -21,6 +21,7 @@ scalar BigInt
 
 type JwtPayloadResponse {
   username: String!
+  password: String!
   iat: BigInt!
   exp: BigInt!
   token: String
@@ -47,6 +48,14 @@ type Post {
   likes: Float!
 }
 
+type PostTimeline {
+  text: String!
+  picture: String
+  createdAt: BigInt!
+  likes: Float!
+  timestamp: BigInt!
+}
+
 type Query {
   findUserByUsername(username: String!): User!
   findAll: [User!]!
@@ -55,6 +64,7 @@ type Query {
   findPostById(id: String!): Post!
   findUserPosts(username: String!): [Post!]!
   findPostComments(postId: String!): [PostComment!]!
+  getUserTimeline(username: String!): [PostTimeline!]!
 }
 
 type Mutation {

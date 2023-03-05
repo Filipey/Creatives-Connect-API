@@ -1,10 +1,12 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UseGuards } from '@nestjs/common';
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
+import { JwtAuthGuard } from 'src/auth/jwt/jwt-auth.guard';
 import { CommentInput } from './models/comment-input';
 import { Comment } from './models/comment-model';
 import { CreatePostInput } from './models/create-post-input';
 import { PostComment } from './models/post-comment-mode';
 import { Post } from './models/post-model';
+import { PostTimeline } from './models/posts-timeline';
 import { PostsService } from './posts.service';
 
 @Injectable()
@@ -27,7 +29,14 @@ export class PostsResolver {
     return this.postService.findPostComments(postId);
   }
 
+  @Query(() => [PostTimeline])
+  @UseGuards(JwtAuthGuard)
+  async getUserTimeline(@Args('username') username: string) {
+    return this.postService.getUserTimeline(username);
+  }
+
   @Mutation(() => Boolean)
+  @UseGuards(JwtAuthGuard)
   async likePost(
     @Args('username') username: string,
     @Args('postId') postId: string,
@@ -36,6 +45,7 @@ export class PostsResolver {
   }
 
   @Mutation(() => Boolean)
+  @UseGuards(JwtAuthGuard)
   async unlikePost(
     @Args('username') username: string,
     @Args('postId') postId: string,
@@ -44,6 +54,7 @@ export class PostsResolver {
   }
 
   @Mutation(() => Comment)
+  @UseGuards(JwtAuthGuard)
   async comment(
     @Args('username') username: string,
     @Args('postId') postId: string,
@@ -53,6 +64,7 @@ export class PostsResolver {
   }
 
   @Mutation(() => Boolean)
+  @UseGuards(JwtAuthGuard)
   async deleteComment(
     @Args('username') username: string,
     @Args('postId') postId: string,
@@ -62,6 +74,7 @@ export class PostsResolver {
   }
 
   @Mutation(() => Post)
+  @UseGuards(JwtAuthGuard)
   async createPost(
     @Args('username') username: string,
     @Args('postInput') postInput: CreatePostInput,
@@ -70,6 +83,7 @@ export class PostsResolver {
   }
 
   @Mutation(() => Post)
+  @UseGuards(JwtAuthGuard)
   async updatePost(
     @Args('postId') postId: string,
     @Args('updatePost') updatePost: CreatePostInput,
@@ -78,6 +92,7 @@ export class PostsResolver {
   }
 
   @Mutation(() => Boolean)
+  @UseGuards(JwtAuthGuard)
   async deletePost(@Args('postId') postId: string) {
     return this.postService.deletePost(postId);
   }

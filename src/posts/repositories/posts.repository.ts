@@ -162,6 +162,26 @@ export class PostsRepository {
     return postComments;
   }
 
+  async getUserTimeline(username: string) {
+    const userExists = await this.service.read(
+      `MATCH (u:User {username: '${username}'})
+       RETURN u
+      `,
+    );
+
+    if (userExists.length === 0) {
+      throw new UserNotFound(username);
+    }
+
+    const result = await this.service.read(
+      `MATCH (u:User {username: '${username}'})-[:FOLLOW]->(f:User)-[pt:POSTED]->(p:Post)
+       RETURN p, pt
+      `,
+    );
+
+    return result;
+  }
+
   async create(username: string, post: CreatePostInput) {
     const postId = uuidv4();
     const createPost = await this.service.write(`

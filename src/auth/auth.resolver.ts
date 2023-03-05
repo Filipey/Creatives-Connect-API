@@ -18,6 +18,6 @@ export class AuthResolver {
       throw new UnauthorizedException();
     }
 
-    return this.authService.createToken(username);
+    return this.authService.createToken(username, password);
   }
 }

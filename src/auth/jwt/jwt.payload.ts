@@ -14,6 +14,9 @@ export class JwtPayloadResponse {
   @Field()
   username: string;
 
+  @Field()
+  password: string;
+
   @Field(() => GraphQLBigInt)
   iat: number;
 

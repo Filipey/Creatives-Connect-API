@@ -81,6 +81,23 @@ export class PostsService {
     return comments;
   }
 
+  async getUserTimeline(username: string) {
+    const result = await this.repository.getUserTimeline(username);
+    const timeline = result.map((node) => {
+      const post = node.get('p').properties;
+      const postMetadata = node.get('pt').properties;
+
+      return {
+        ...post,
+        createdAt: parseDbInt(post.created_at),
+        likes: parseDbInt(post.likes),
+        timestamp: parseDbInt(postMetadata.timestamp),
+      };
+    });
+
+    return timeline;
+  }
+
   async createPost(username: string, post: CreatePostInput) {
     const createdPost = await this.repository.create(username, post);
 
