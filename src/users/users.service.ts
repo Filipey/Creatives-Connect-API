@@ -2,11 +2,16 @@ import { Injectable } from '@nestjs/common';
 import { UserNotFound } from 'src/common/errors/UserNotFound';
 import { parseDbInt } from 'src/utils/DbParser';
 import { CreateUserInput } from './models/create-user-input';
+import { UpdateUserInput } from './models/update-user-input';
 import { UsersRepository } from './repositories/users.repository';
 
 @Injectable()
 export class UsersService {
   constructor(private readonly repository: UsersRepository) {}
+
+  async isUserFollowing(sourceUsername: string, sinkUsername: string) {
+    return this.repository.isFollowing(sourceUsername, sinkUsername);
+  }
 
   async findByUsername(username: string) {
     const result = await this.repository.findByUsername(username);
@@ -15,7 +20,13 @@ export class UsersService {
       throw new UserNotFound(username);
     }
 
-    return result[0].get(0).properties;
+    const userNode = result[0].get(0).properties;
+
+    return {
+      ...userNode,
+      createdAt: parseDbInt(userNode.created_at),
+      birthday: parseDbInt(userNode.birthday),
+    };
   }
 
   async findAllUsers() {
@@ -23,7 +34,11 @@ export class UsersService {
 
     const nodes = result.map((user) => user.toObject());
 
-    const users = nodes.map((node) => node.u.properties);
+    const users = nodes.map((node) => ({
+      ...node.u.properties,
+      createdAt: parseDbInt(node.u.properties.created_at),
+      birthday: parseDbInt(node.u.properties.birthday),
+    }));
 
     return users;
   }
@@ -53,11 +68,11 @@ export class UsersService {
   async findUserFollowers(username: string) {
     const result = await this.repository.findUserFollowers(username);
 
-    const nodes = result.map((node) => node.get('u'));
+    const nodes = result.map((node) => node.get('u').properties);
 
     const followers = nodes.map((user) => ({
       ...user,
-      createdAt: parseDbInt(user.createdAt),
+      createdAt: parseDbInt(user.created_at),
       birthday: parseDbInt(user.birthday),
     }));
 
@@ -67,11 +82,11 @@ export class UsersService {
   async findFollowedsByUser(username: string) {
     const result = await this.repository.findFollowedsByUser(username);
 
-    const nodes = result.map((node) => node.get('u'));
+    const nodes = result.map((node) => node.get('u2').properties);
 
     const followers = nodes.map((user) => ({
       ...user,
-      createdAt: parseDbInt(user.createdAt),
+      createdAt: parseDbInt(user.created_at),
       birthday: parseDbInt(user.birthday),
     }));
 
@@ -86,9 +101,15 @@ export class UsersService {
     return this.repository.delete(username);
   }
 
-  async update(username: string, user: CreateUserInput) {
+  async update(username: string, user: UpdateUserInput) {
     const result = await this.repository.update(username, user);
 
-    return result[0].get(0).properties;
+    const updatedNode = result[0].get(0).properties;
+
+    return {
+      ...updatedNode,
+      createdAt: parseDbInt(updatedNode.created_at),
+      birthday: parseDbInt(updatedNode.birthday),
+    };
   }
 }

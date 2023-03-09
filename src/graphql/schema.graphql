@@ -49,14 +49,17 @@ type Post {
 }
 
 type PostTimeline {
+  id: String!
   text: String!
   picture: String
   createdAt: BigInt!
   likes: Float!
   timestamp: BigInt!
+  owner: User!
 }
 
 type Query {
+  isUserFollowing(sourceUsername: String!, sinkUsername: String!): Boolean!
   findUserByUsername(username: String!): User!
   findAll: [User!]!
   findUserFollowers(username: String!): [User!]!
@@ -72,7 +75,7 @@ type Mutation {
   followUser(sourceUsername: String!, sinkUsername: String!): Boolean!
   unfollowUser(sourceUsername: String!, sinkUsername: String!): Boolean!
   deleteUser(username: String!): Boolean!
-  updateUser(username: String!, updatedUser: CreateUserInput!): User!
+  updateUser(username: String!, updatedUser: UpdateUserInput!): User!
   likePost(username: String!, postId: String!): Boolean!
   unlikePost(username: String!, postId: String!): Boolean!
   comment(username: String!, postId: String!, commentInput: CommentInput!): Comment!
@@ -91,6 +94,15 @@ input CreateUserInput {
   picture: String
   city: String!
   birthday: BigInt!
+}
+
+input UpdateUserInput {
+  password: String
+  name: String
+  biography: String
+  picture: String
+  city: String
+  birthday: BigInt
 }
 
 input CommentInput {

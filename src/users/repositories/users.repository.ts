@@ -6,12 +6,13 @@ import { UserNotFound } from 'src/common/errors/UserNotFound';
 import { Neo4JService } from 'src/database/database.service';
 import { hashPassword } from 'src/utils/Bcrypt';
 import { CreateUserInput } from '../models/create-user-input';
+import { UpdateUserInput } from '../models/update-user-input';
 
 @Injectable()
 export class UsersRepository {
   constructor(private readonly service: Neo4JService) {}
 
-  private async isFollowing(sourceUsername: string, sinkUsername: string) {
+  async isFollowing(sourceUsername: string, sinkUsername: string) {
     const isAlreadyFollowing = await this.service.read(`
     MATCH (u:User {username: '${sourceUsername}'})-[f:FOLLOW]->(u2:User {username: '${sinkUsername}'}) 
     RETURN f
@@ -114,7 +115,7 @@ export class UsersRepository {
         user.biography
       }', picture: '${user.picture}', city: '${user.city}', birthday: ${
         user.birthday
-      }, created_at: ${Date.now()}}) RETURN u`,
+      }, created_at: ${Date.now() - 1000 * 3600 * 3}}) RETURN u`,
     );
 
     return result[0].get(0).properties;
@@ -137,7 +138,7 @@ export class UsersRepository {
     return true;
   }
 
-  async update(username: string, updateUser: CreateUserInput) {
+  async update(username: string, updateUser: UpdateUserInput) {
     const queryUser = await this.service.read(`
     MATCH (u:User {username: '${username}'})
     RETURN u
@@ -147,11 +148,26 @@ export class UsersRepository {
       throw new UserNotFound(username);
     }
 
+    const originalUser = queryUser[0].get('u').properties;
+
+    const password = updateUser.password
+      ? await hashPassword(updateUser.password)
+      : originalUser.password;
+
     const updatedUser = await this.service.write(`
     MATCH(u:User {username: '${username}'})
-    SET u.name = '${updateUser.name}', u.biography = '${updateUser.biography}',
-    u.picture = '${updateUser.picture}', u.city = '${updateUser.city}',
-    u.birthday = ${updateUser.birthday}
+    SET u.name = '${
+      updateUser.name ? updateUser.name : originalUser.name
+    }', u.biography = '${
+      updateUser.biography ? updateUser.biography : originalUser.biography
+    }',
+    u.picture = '${
+      updateUser.picture ? updateUser.picture : updateUser.picture
+    }', u.city = '${updateUser.city ? updateUser.city : originalUser.city}',
+    u.birthday = ${
+      updateUser.birthday ? updateUser.birthday : originalUser.birthday
+    },
+    u.password = '${password}'
     RETURN u
     `);
 

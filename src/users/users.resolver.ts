@@ -2,6 +2,7 @@ import { Injectable, UseGuards } from '@nestjs/common';
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { JwtAuthGuard } from 'src/auth/jwt/jwt-auth.guard';
 import { CreateUserInput } from './models/create-user-input';
+import { UpdateUserInput } from './models/update-user-input';
 import { User } from './models/user-model';
 import { UsersService } from './users.service';
 
@@ -9,6 +10,14 @@ import { UsersService } from './users.service';
 @Resolver(() => User)
 export class UsersResolver {
   constructor(private readonly userService: UsersService) {}
+
+  @Query(() => Boolean)
+  async isUserFollowing(
+    @Args('sourceUsername') sourceUsername: string,
+    @Args('sinkUsername') sinkUsername: string,
+  ) {
+    return this.userService.isUserFollowing(sourceUsername, sinkUsername);
+  }
 
   @Query(() => User)
   async findUserByUsername(@Args('username') username: string) {
@@ -62,7 +71,7 @@ export class UsersResolver {
   @UseGuards(JwtAuthGuard)
   async updateUser(
     @Args('username') username: string,
-    @Args('updatedUser') updatedUser: CreateUserInput,
+    @Args('updatedUser') updatedUser: UpdateUserInput,
   ) {
     return this.userService.update(username, updatedUser);
   }

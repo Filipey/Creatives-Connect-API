@@ -71,7 +71,7 @@ export class PostsRepository {
       await this.service.write(`
       MATCH (u:User {username: '${username}'})
       MATCH (p:Post {id: '${postId}'})
-      CREATE (u)-[l:LIKED {timestamp: ${Date.now()}}]->(p)
+      CREATE (u)-[l:LIKED {timestamp: ${Date.now() - 1000 * 3600 * 3}}]->(p)
       SET p.likes = p.likes + 1
       RETURN type(l)
       `);
@@ -113,7 +113,7 @@ export class PostsRepository {
       MATCH (p:Post {id: '${postId}'})
       CREATE (u)-[c:COMMENTED {id: '${commentId}', text: '${
         comment.text
-      }', created_at: ${Date.now()}}]->(p)
+      }', created_at: ${Date.now() - 1000 * 3600 * 3}}]->(p)
       RETURN c
       `);
 
@@ -175,7 +175,7 @@ export class PostsRepository {
 
     const result = await this.service.read(
       `MATCH (u:User {username: '${username}'})-[:FOLLOW]->(f:User)-[pt:POSTED]->(p:Post)
-       RETURN p, pt
+       RETURN p, pt, f
       `,
     );
 
@@ -187,7 +187,7 @@ export class PostsRepository {
     const createPost = await this.service.write(`
     CREATE(p: Post {id: '${postId}', text: '${post.text}', picture: '${
       post.picture
-    }', created_at: ${Date.now()}, likes: ${0}}) RETURN p
+    }', created_at: ${Date.now() - 1000 * 3600 * 3}, likes: 0}) RETURN p
     `);
 
     await this.service.write(`

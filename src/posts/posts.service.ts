@@ -86,12 +86,18 @@ export class PostsService {
     const timeline = result.map((node) => {
       const post = node.get('p').properties;
       const postMetadata = node.get('pt').properties;
+      const postOwner = node.get('f').properties;
 
       return {
         ...post,
         createdAt: parseDbInt(post.created_at),
         likes: parseDbInt(post.likes),
         timestamp: parseDbInt(postMetadata.timestamp),
+        owner: {
+          ...postOwner,
+          createdAt: parseDbInt(postOwner.created_at),
+          birthday: parseDbInt(postOwner.birthday),
+        },
       };
     });
 
@@ -100,14 +106,24 @@ export class PostsService {
 
   async createPost(username: string, post: CreatePostInput) {
     const createdPost = await this.repository.create(username, post);
+    const postNode = createdPost[0].get(0).properties;
 
-    return createdPost[0].get(0).properties;
+    return {
+      ...postNode,
+      likes: parseDbInt(postNode.likes),
+      createdAt: parseDbInt(postNode.created_at),
+    };
   }
 
   async updatePost(postId: string, updatePost: CreatePostInput) {
     const updatedPost = await this.repository.update(postId, updatePost);
+    const updatedPostNode = updatedPost[0].get(0).properties;
 
-    return updatedPost[0].get(0).properties;
+    return {
+      ...updatedPostNode,
+      likes: parseDbInt(updatedPostNode.likes),
+      createdAt: parseDbInt(updatedPostNode.created_at),
+    };
   }
 
   async deletePost(postId: string) {
