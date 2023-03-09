@@ -6,7 +6,6 @@ type User {
   name: String!
   password: String!
   username: String!
-  email: String!
   biography: String
   picture: String
   city: String!
@@ -31,6 +30,7 @@ type Comment {
   id: ID!
   text: String!
   created_at: BigInt!
+  owner: User!
 }
 
 type PostComment {
@@ -46,6 +46,7 @@ type Post {
   picture: String
   createdAt: BigInt!
   likes: Float!
+  owner: User!
 }
 
 type PostTimeline {

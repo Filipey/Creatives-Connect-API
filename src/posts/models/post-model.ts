@@ -1,5 +1,6 @@
 import { Field, Float, ID, ObjectType } from '@nestjs/graphql';
 import { GraphQLBigInt } from 'graphql-scalars';
+import { User } from 'src/users/models/user-model';
 
 @ObjectType()
 export class Post {
@@ -17,4 +18,7 @@ export class Post {
 
   @Field(() => Float)
   likes: number;
+
+  @Field(() => User)
+  owner: User;
 }

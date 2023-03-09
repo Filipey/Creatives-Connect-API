@@ -11,33 +11,45 @@ export class PostsService {
   async findPostById(id: string) {
     const res = await this.repository.findPostById(id);
 
-    const post = res[0].get(0).properties;
-    const parsedCreatedAt = parseDbInt(post.created_at);
-    const parsedDbLikes = parseDbInt(post.likes);
+    const post = res.map((node) => {
+      const postNode = node.get('p').properties;
+      const owner = node.get('u').properties;
 
-    const parsedPost = {
-      ...post,
-      createdAt: parsedCreatedAt,
-      likes: parsedDbLikes,
-    };
+      return {
+        ...postNode,
+        createdAt: parseDbInt(post.created_at),
+        likes: parseDbInt(post.likes),
+        owner: {
+          ...owner,
+          birthday: parseDbInt(owner.birthday),
+          createdAt: parseDbInt(owner.created_at),
+        },
+      };
+    });
 
-    return parsedPost;
+    return post;
   }
 
   async findUserPosts(username: string) {
     const result = await this.repository.findUserPosts(username);
 
-    const nodes = result.map((post) => post.toObject());
+    const posts = result.map((node) => {
+      const postNode = node.get('p').properties;
+      const owner = node.get('u').properties;
 
-    const posts = nodes.map((node) => node.p.properties);
+      return {
+        ...postNode,
+        createdAt: parseDbInt(postNode.created_at),
+        likes: parseDbInt(postNode.likes),
+        owner: {
+          ...owner,
+          birthday: parseDbInt(owner.birthday),
+          createdAt: parseDbInt(owner.created_at),
+        },
+      };
+    });
 
-    const parsedPosts = posts.map((post) => ({
-      ...post,
-      createdAt: parseDbInt(post.created_at),
-      likes: parseDbInt(post.likes),
-    }));
-
-    return parsedPosts;
+    return posts;
   }
 
   async likePost(username: string, postId: string) {
@@ -53,7 +65,20 @@ export class PostsService {
 
     if (result === false) return result;
 
-    return result[0].get(0).properties;
+    const commentProperties = result[0].get('c').properties;
+    const ownerProperties = result[0].get('u').properties;
+
+    const resultComment = {
+      ...commentProperties,
+      createdAt: parseDbInt(commentProperties.created_at),
+      owner: {
+        ...ownerProperties,
+        birthday: parseDbInt(ownerProperties.birthday),
+        createdAt: parseDbInt(ownerProperties.created_at),
+      },
+    };
+
+    return resultComment;
   }
 
   async deleteComment(username: string, postId: string, commentId: string) {
@@ -106,13 +131,22 @@ export class PostsService {
 
   async createPost(username: string, post: CreatePostInput) {
     const createdPost = await this.repository.create(username, post);
-    const postNode = createdPost[0].get(0).properties;
 
-    return {
-      ...postNode,
-      likes: parseDbInt(postNode.likes),
-      createdAt: parseDbInt(postNode.created_at),
+    const postProperties = createdPost[0].get('p').properties;
+    const ownerProperties = createdPost[0].get('u').properties;
+
+    const resultPost = {
+      ...postProperties,
+      createdAt: parseDbInt(postProperties.created_at),
+      likes: parseDbInt(postProperties.likes),
+      owner: {
+        ...ownerProperties,
+        createdAt: parseDbInt(ownerProperties.created_at),
+        birthday: parseDbInt(ownerProperties.birthday),
+      },
     };
+
+    return resultPost;
   }
 
   async updatePost(postId: string, updatePost: CreatePostInput) {

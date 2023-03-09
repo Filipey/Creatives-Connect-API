@@ -13,9 +13,6 @@ export class User {
   @Field()
   username: string;
 
-  @Field()
-  email: string;
-
   @Field({ nullable: true })
   biography: string;
 

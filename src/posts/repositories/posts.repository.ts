@@ -37,8 +37,8 @@ export class PostsRepository {
 
   async findPostById(id: string) {
     const post = await this.service.read(`
-    MATCH (p: Post {id: '${id}'})
-    RETURN p
+    MATCH (u:User)-[:POSTED]->(p: Post {id: '${id}'})
+    RETURN p, u
     `);
 
     if (post.length === 0) {
@@ -51,7 +51,7 @@ export class PostsRepository {
   async findUserPosts(username: string) {
     const posts = await this.service.read(`
     MATCH (u:User {username: '${username}'})-[:POSTED]->(p:Post)
-    RETURN p
+    RETURN p, u
     `);
 
     return posts;
@@ -114,7 +114,7 @@ export class PostsRepository {
       CREATE (u)-[c:COMMENTED {id: '${commentId}', text: '${
         comment.text
       }', created_at: ${Date.now() - 1000 * 3600 * 3}}]->(p)
-      RETURN c
+      RETURN c, u
       `);
 
       return commentResult;
@@ -184,17 +184,17 @@ export class PostsRepository {
 
   async create(username: string, post: CreatePostInput) {
     const postId = uuidv4();
-    const createPost = await this.service.write(`
+    await this.service.write(`
     CREATE(p: Post {id: '${postId}', text: '${post.text}', picture: '${
       post.picture
     }', created_at: ${Date.now() - 1000 * 3600 * 3}, likes: 0}) RETURN p
     `);
 
-    await this.service.write(`
+    const createPost = await this.service.write(`
     MATCH (u:User {username: '${username}'})
     MATCH (p:Post {id: '${postId}'})
     CREATE (u)-[pt:POSTED {timestamp: ${Date.now()}}]->(p)
-    RETURN type (pt)
+    RETURN p, u
     `);
 
     return createPost;
