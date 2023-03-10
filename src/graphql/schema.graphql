@@ -68,6 +68,7 @@ type Query {
   findPostById(id: String!): Post!
   findUserPosts(username: String!): [Post!]!
   findPostComments(postId: String!): [PostComment!]!
+  userLikedPost(username: String!, postId: String!): Boolean!
   getUserTimeline(username: String!): [PostTimeline!]!
 }
 

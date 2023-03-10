@@ -29,6 +29,14 @@ export class PostsResolver {
     return this.postService.findPostComments(postId);
   }
 
+  @Query(() => Boolean)
+  async userLikedPost(
+    @Args('username') username: string,
+    @Args('postId') postId: string,
+  ) {
+    return this.postService.userLikedPost(username, postId);
+  }
+
   @Query(() => [PostTimeline])
   @UseGuards(JwtAuthGuard)
   async getUserTimeline(@Args('username') username: string) {

@@ -105,6 +105,19 @@ export class PostsRepository {
     return false;
   }
 
+  async userLikedPost(username: string, postId: string) {
+    const userLikedPost = await this.service.read(`
+      MATCH (u:User {username: '${username}'})-[l:LIKED]->(p:Post {id: '${postId}'})
+      RETURN l
+      `);
+
+    if (userLikedPost.length === 0) {
+      return false;
+    }
+
+    return true;
+  }
+
   async comment(username: string, postId: string, comment: CommentInput) {
     if (await this.userAndPostExists(username, postId)) {
       const commentId = uuidv4();

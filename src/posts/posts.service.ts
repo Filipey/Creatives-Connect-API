@@ -85,6 +85,10 @@ export class PostsService {
     return this.repository.deleteComment(username, postId, commentId);
   }
 
+  async userLikedPost(username: string, postId: string) {
+    return this.repository.userLikedPost(username, postId);
+  }
+
   async findPostComments(postId: string) {
     const result = await this.repository.findPostComments(postId);
 
