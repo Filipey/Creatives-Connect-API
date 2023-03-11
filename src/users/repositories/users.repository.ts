@@ -132,7 +132,7 @@ export class UsersRepository {
 
     await this.service.write(`
     MATCH (u:User {username: '${username}'})
-    DELETE u
+    DETACH DELETE u
     `);
 
     return true;

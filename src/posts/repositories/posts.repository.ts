@@ -235,7 +235,7 @@ export class PostsRepository {
 
     await this.service.write(`
     MATCH (p:Post {id: '${id}'})
-    DELETE p
+    DETACH DELETE p
     `);
 
     return true;
